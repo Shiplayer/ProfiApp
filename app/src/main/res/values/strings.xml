@@ -5,4 +5,14 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="action_settings">Settings</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notifications</string>
+    <string name="menu_search_name">Поиск</string>
+    <string name="menu_favorites_name">Избранные</string>
+    <string name="menu_orders_name">Заказы</string>
+    <string name="menu_account_name">Личный кабинет</string>
+    <string name="card_item_first_name">First Name</string>
+    <string name="card_item_last_name">Last Name</string>
 </resources>
