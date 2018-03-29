@@ -1,5 +1,7 @@
 package rf.master.registration.profiapp;
 
+import android.arch.lifecycle.ViewModelProvider;
+import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -16,14 +18,16 @@ import java.util.List;
 import java.util.Random;
 
 import rf.master.registration.profiapp.data.entity.Store;
+import rf.master.registration.profiapp.store.StoreLiveData;
+import rf.master.registration.profiapp.store.StoreViewModel;
+import rf.master.registration.profiapp.util.StoreUtil;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = MainActivity.class.getCanonicalName();
+    private StoreViewModel viewModel;
     private TextView mTextMessage;
     private RecyclerView mMainList;
-    private static String[] RANDOM_FIRST_NAME = {"Kaitlin", "Garnett", "Moe", "Tiger", "Fletcher"};
-    private static String[] RANDOM_LAST_NAME = {"Marcia", "Cecil", "Phyliss", "Cass", "Michaela"};
-    private static String[] RANDOM_FAKE_NAME_STORIES = {"The Devil is a Girl", "The Chosen Ones sister", "List of Random Names"};
+    private StoreAdapter mStoreAdapter;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -53,29 +57,21 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mTextMessage = (TextView) findViewById(R.id.message);
+        mTextMessage = findViewById(R.id.message);
         mMainList = findViewById(R.id.rv_cards);
         mMainList.setLayoutManager(new LinearLayoutManager(this));
-        mMainList.setAdapter(new StoreAdapter(getRandomListStories(20)));
+        viewModel = ViewModelProviders.of(this).get(StoreViewModel.class);
+        mStoreAdapter = new StoreAdapter();
+        mMainList.setAdapter(mStoreAdapter);
         mMainList.setHasFixedSize(true);
 
-        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
+        BottomNavigationView navigation = findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
     }
 
-    private List<Store> getRandomListStories(int count){
-        List<Store> list = new ArrayList<>();
-        Random random = new Random();
-        StringBuilder stringBuilder = new StringBuilder();
-        for(int i = 0; i < count; i++){
-            list.add(new Store(getResources(), RANDOM_FAKE_NAME_STORIES[random.nextInt(RANDOM_FAKE_NAME_STORIES.length)],
-                    RANDOM_FIRST_NAME[random.nextInt(RANDOM_FIRST_NAME.length)], RANDOM_LAST_NAME[random.nextInt(RANDOM_LAST_NAME.length)],
-                    random.nextFloat() * 10 % 5, random.nextFloat() * 10 % 5));
-            stringBuilder.append(list.get(i)).append("\n");
-        }
-
-        Log.w(TAG, "stories = " + stringBuilder.toString());
-        return list;
+    @Override
+    protected void onResume() {
+        super.onResume();
+        viewModel.getStoreLiveData(getApplicationContext()).observe(this, mStoreAdapter::changeStories);
     }
-
 }

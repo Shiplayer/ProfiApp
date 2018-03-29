@@ -20,6 +20,8 @@ import rf.master.registration.profiapp.data.entity.Store;
 public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> {
     private List<Store> mListStories;
 
+    public StoreAdapter(){}
+
     public StoreAdapter(List<Store> stories){
         mListStories = stories;
     }
