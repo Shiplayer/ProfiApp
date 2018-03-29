@@ -9,7 +9,6 @@ import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import rf.master.registration.profiapp.data.entity.Store;
@@ -18,10 +17,10 @@ import rf.master.registration.profiapp.data.entity.Store;
  * Created by Shiplayer on 28.03.18.
  */
 
-public class StoresAdapter extends RecyclerView.Adapter<StoresAdapter.ViewHolder> {
+public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> {
     private List<Store> mListStories;
 
-    public StoresAdapter(List<Store> stories){
+    public StoreAdapter(List<Store> stories){
         mListStories = stories;
     }
 

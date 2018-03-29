@@ -14,7 +14,6 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.stream.Collectors;
 
 import rf.master.registration.profiapp.data.entity.Store;
 
@@ -57,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
         mTextMessage = (TextView) findViewById(R.id.message);
         mMainList = findViewById(R.id.rv_cards);
         mMainList.setLayoutManager(new LinearLayoutManager(this));
-        mMainList.setAdapter(new StoresAdapter(getRandomListStories(20)));
+        mMainList.setAdapter(new StoreAdapter(getRandomListStories(20)));
         mMainList.setHasFixedSize(true);
 
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
