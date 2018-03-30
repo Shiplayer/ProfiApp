@@ -15,4 +15,7 @@
     <string name="menu_account_name">Личный кабинет</string>
     <string name="card_item_first_name">First Name</string>
     <string name="card_item_last_name">Last Name</string>
+    <string name="button_name_man">Мужчины</string>
+    <string name="button_name_woman">Женщины</string>
+    <string name="button_name_child">Дети</string>
 </resources>
