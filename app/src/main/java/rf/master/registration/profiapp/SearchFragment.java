@@ -1,0 +1,78 @@
+package rf.master.registration.profiapp;
+
+
+import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
+import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+
+import rf.master.registration.profiapp.store.StoreViewModel;
+
+
+/**
+ * A simple {@link Fragment} subclass.
+ */
+public class SearchFragment extends Fragment {
+    private final static String TAG = SearchFragment.class.getSimpleName();
+    private final static String KEY_SCROLL_Y = "ScrollY";
+
+
+    private StoreViewModel viewModel;
+    private RecyclerView mMainList;
+    private StoreAdapter mStoreAdapter;
+    private Context mContext;
+
+
+    public SearchFragment() {
+        // Required empty public constructor
+    }
+
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        return inflater.inflate(R.layout.fragment_search, container, false);
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        mMainList = getView().findViewById(R.id.rv_cards);
+        mMainList.setLayoutManager(new LinearLayoutManager(mContext));
+        viewModel = ViewModelProviders.of(this).get(StoreViewModel.class);
+        mStoreAdapter = new StoreAdapter();
+        mMainList.setAdapter(mStoreAdapter);
+        mMainList.setHasFixedSize(true);
+
+        if(savedInstanceState != null){
+            mMainList.setScrollY(savedInstanceState.getInt(KEY_SCROLL_Y));
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(KEY_SCROLL_Y, mMainList.getScrollY());
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        mContext = context;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        viewModel.getStoreLiveData(getActivity()).observe(this, mStoreAdapter::changeStories);
+    }
+}
