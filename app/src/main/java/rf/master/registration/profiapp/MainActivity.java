@@ -1,23 +1,38 @@
 package rf.master.registration.profiapp;
 
-import android.arch.lifecycle.ViewModelProviders;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 
-import rf.master.registration.profiapp.store.StoreViewModel;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+import rf.master.registration.profiapp.fragments.AccountFragment;
+import rf.master.registration.profiapp.fragments.FavoriteFragment;
+import rf.master.registration.profiapp.fragments.OrderFragment;
+import rf.master.registration.profiapp.fragments.SearchFragment;
+
+public class MainActivity extends AppCompatActivity implements FavoriteFragment.OnFragmentInteractionListener{
+
     private static final String TAG = MainActivity.class.getCanonicalName();
+    private static final int RESULT_CODE_FROM_LOGIN = 1001;
+    public static final String INTENT_FILTER_DATA_TYPE = "rf.master.registration.profiapp/killer";
+
     private BottomNavigationView mNavigation;
     private View mIncludeChooser;
     private FragmentManager mFragmentManager;
+    private LinkedList<Fragment> mHistoryOfFragments;
+    private MessagesReceiver mMessagesReceiver;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = item -> {
@@ -28,12 +43,15 @@ public class MainActivity extends AppCompatActivity {
                         Log.w(TAG, getResources().getString(R.string.menu_search_name));
                         return true;
                     case R.id.navigation_favorites:
+                        navigateToFragment(new FavoriteFragment());
                         Log.w(TAG, getResources().getString(R.string.menu_favorites_name));
                         return true;
                     case R.id.navigation_orders:
+                        navigateToFragment(new OrderFragment());
                         Log.w(TAG, getResources().getString(R.string.menu_orders_name));
                         return true;
                     case R.id.navigation_account:
+                        navigateToFragment(new AccountFragment());
                         Log.w(TAG, getResources().getString(R.string.menu_account_name));
                         return true;
                 }
@@ -43,6 +61,13 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        mHistoryOfFragments = new LinkedList<>();
+        mMessagesReceiver = new MessagesReceiver();
+        registerReceiver(mMessagesReceiver, IntentFilter.create("kill", INTENT_FILTER_DATA_TYPE));
+
+        startActivityForResult(new Intent(this, LoginActivity.class), RESULT_CODE_FROM_LOGIN);
+
         setContentView(R.layout.activity_main);
         View.OnClickListener listener = new HandleChooseButtons();
 
@@ -64,6 +89,13 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Log.w(TAG, requestCode + " " + resultCode + " ");
+        Log.w(TAG, String.valueOf(data.getBooleanExtra(LoginActivity.IS_LOGIN_EXTRA, false)));
+    }
+
     public void hiddenChooser(){
         mIncludeChooser.setVisibility(View.INVISIBLE);
         mNavigation.setVisibility(View.VISIBLE);
@@ -71,6 +103,11 @@ public class MainActivity extends AppCompatActivity {
     public void showChooser() {
         mIncludeChooser.setVisibility(View.VISIBLE);
         mNavigation.setVisibility(View.INVISIBLE);
+    }
+
+    @Override
+    public void onFragmentInteraction(Uri uri) {
+        Log.w(TAG, uri.toString());
     }
 
     private class HandleChooseButtons implements View.OnClickListener{
@@ -96,17 +133,41 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void navigateToFragment(Fragment fragment){
-        mFragmentManager.beginTransaction().add(R.id.fragmentContainer, fragment).commit();
+        mFragmentManager.beginTransaction().replace(R.id.fragmentContainer, fragment).addToBackStack(null).commit();
         Log.w(TAG, "size list of Fragments: " + mFragmentManager.getFragments().size());
+        List<Fragment> fragments = mFragmentManager.getFragments();
+        for(Fragment fr : fragments){
+            Log.w(TAG, String.valueOf(fr.getActivity().getTitle()));
+        }
     }
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
-
+        /*if(!mHistoryOfFragments.isEmpty()) {
+            for(Fragment fragment : mHistoryOfFragments)
+                Log.w(TAG, "onBackPressed: " + fragment.getActivity().getTitle());
+            mFragmentManager.beginTransaction().detach(mHistoryOfFragments.getLast());
+            mHistoryOfFragments.pop();
+            mFragmentManager.beginTransaction().replace(R.id.fragmentContainer, mHistoryOfFragments.getLast()).commit();
+        } else*/
+            super.onBackPressed();
     }
 
     protected void onResume() {
         super.onResume();
+    }
+
+    public final class MessagesReceiver extends BroadcastReceiver{
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            finish();
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(mMessagesReceiver);
     }
 }
