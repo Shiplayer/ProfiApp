@@ -1,4 +1,4 @@
-package rf.master.registration.profiapp;
+package rf.master.registration.profiapp.fragments;
 
 
 import android.arch.lifecycle.ViewModelProviders;
@@ -13,6 +13,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import rf.master.registration.profiapp.R;
+import rf.master.registration.profiapp.StoreAdapter;
 import rf.master.registration.profiapp.store.StoreViewModel;
 
 
@@ -46,9 +48,10 @@ public class SearchFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        getActivity().setTitle("Search fragment");
         mMainList = getView().findViewById(R.id.rv_cards);
         mMainList.setLayoutManager(new LinearLayoutManager(mContext));
-        viewModel = ViewModelProviders.of(this).get(StoreViewModel.class);
+        viewModel = ViewModelProviders.of(getActivity()).get(StoreViewModel.class);
         mStoreAdapter = new StoreAdapter();
         mMainList.setAdapter(mStoreAdapter);
         mMainList.setHasFixedSize(true);
@@ -61,6 +64,7 @@ public class SearchFragment extends Fragment {
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
+        //Log.w(TAG, mMainList + " " + mMainList.getScrollY());
         outState.putInt(KEY_SCROLL_Y, mMainList.getScrollY());
     }
 
@@ -73,6 +77,6 @@ public class SearchFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        viewModel.getStoreLiveData(getActivity()).observe(this, mStoreAdapter::changeStories);
+        viewModel.getStoreLiveData(getContext()).observe(SearchFragment.this, mStoreAdapter::changeStories);
     }
 }
