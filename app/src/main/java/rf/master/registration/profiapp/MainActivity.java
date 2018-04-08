@@ -10,6 +10,7 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 
@@ -17,10 +18,12 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import rf.master.registration.profiapp.adapters.ItemChooseAdapter;
 import rf.master.registration.profiapp.fragments.AccountFragment;
 import rf.master.registration.profiapp.fragments.FavoriteFragment;
 import rf.master.registration.profiapp.fragments.OrderFragment;
 import rf.master.registration.profiapp.fragments.SearchFragment;
+import rf.master.registration.profiapp.util.ItemCatalogUtil;
 
 public class MainActivity extends AppCompatActivity implements FavoriteFragment.OnFragmentInteractionListener{
 
@@ -33,6 +36,8 @@ public class MainActivity extends AppCompatActivity implements FavoriteFragment.
     private FragmentManager mFragmentManager;
     private LinkedList<Fragment> mHistoryOfFragments;
     private MessagesReceiver mMessagesReceiver;
+    private RecyclerView mCategoryItems;
+    private ItemChooseAdapter mItemAdapter;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = item -> {
@@ -78,6 +83,9 @@ public class MainActivity extends AppCompatActivity implements FavoriteFragment.
         mNavigation = findViewById(R.id.navigation);
         mIncludeChooser = findViewById(R.id.include_chooser);
         mFragmentManager = getSupportFragmentManager();
+        mCategoryItems = findViewById(R.id.rv_list_catalog);
+
+        mItemAdapter = new ItemChooseAdapter();
 
         mNavigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         mIncludeChooser.setVisibility(View.VISIBLE);
@@ -93,16 +101,25 @@ public class MainActivity extends AppCompatActivity implements FavoriteFragment.
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         Log.w(TAG, requestCode + " " + resultCode + " ");
-        Log.w(TAG, String.valueOf(data.getBooleanExtra(LoginActivity.IS_LOGIN_EXTRA, false)));
+        if(data != null)
+            Log.w(TAG, String.valueOf(data.getBooleanExtra(LoginActivity.IS_LOGIN_EXTRA, false)));
+        else
+            Log.w(TAG, "return is null");
     }
 
     public void hiddenChooser(){
         mIncludeChooser.setVisibility(View.INVISIBLE);
         mNavigation.setVisibility(View.VISIBLE);
     }
+
     public void showChooser() {
         mIncludeChooser.setVisibility(View.VISIBLE);
         mNavigation.setVisibility(View.INVISIBLE);
+    }
+
+    public void chooserItemSelected(){
+        mIncludeChooser.setVisibility(View.INVISIBLE);
+        mCategoryItems.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -115,20 +132,21 @@ public class MainActivity extends AppCompatActivity implements FavoriteFragment.
 
         @Override
         public void onClick(View v) {
+            String choose;
             switch (v.getId()){
                 case R.id.choose_man:
-                    Log.w(TAG, "chose man");
+                    choose = "Мужчина";
                     break;
                 case R.id.choose_woman:
-                    Log.w(TAG, "chose woman");
+                    choose = "Женщина";
                     break;
                 case R.id.choose_child:
-                    Log.w(TAG, "chose child");
+                    choose = "Дети";
                     break;
                 default:
-                    break;
+                    return;
             }
-            hiddenChooser();
+            mItemAdapter.setData(ItemCatalogUtil.getItemCatalogNames(choose));
         }
     }
 
