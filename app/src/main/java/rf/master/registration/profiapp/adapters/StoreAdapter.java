@@ -1,4 +1,4 @@
-package rf.master.registration.profiapp;
+package rf.master.registration.profiapp.adapters;
 
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import java.util.List;
 
+import rf.master.registration.profiapp.R;
 import rf.master.registration.profiapp.data.entity.Store;
 
 /**

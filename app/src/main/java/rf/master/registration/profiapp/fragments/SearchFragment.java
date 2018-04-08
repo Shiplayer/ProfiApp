@@ -14,7 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import rf.master.registration.profiapp.R;
-import rf.master.registration.profiapp.StoreAdapter;
+import rf.master.registration.profiapp.adapters.StoreAdapter;
 import rf.master.registration.profiapp.store.StoreViewModel;
 
 
