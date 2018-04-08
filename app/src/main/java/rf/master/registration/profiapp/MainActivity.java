@@ -9,9 +9,14 @@ import android.os.Bundle;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 
 import java.util.ArrayList;
@@ -150,6 +155,22 @@ public class MainActivity extends AppCompatActivity implements FavoriteFragment.
         }
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.catalog, menu);
+        MenuItem menuItem = menu.findItem(R.id.action_search);
+        SearchView searchView = (SearchView) menuItem.getActionView();
+        searchView.setOnSearchClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.w(TAG, "searchText = " + searchView.getQuery());
+            }
+        });
+        return true;
+    }
+
+
+
     private void navigateToFragment(Fragment fragment){
         mFragmentManager.beginTransaction().replace(R.id.fragmentContainer, fragment).addToBackStack(null).commit();
         Log.w(TAG, "size list of Fragments: " + mFragmentManager.getFragments().size());
@@ -188,4 +209,6 @@ public class MainActivity extends AppCompatActivity implements FavoriteFragment.
         super.onDestroy();
         unregisterReceiver(mMessagesReceiver);
     }
+
+
 }
