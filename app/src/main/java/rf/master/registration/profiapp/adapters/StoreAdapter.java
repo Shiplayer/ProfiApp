@@ -11,8 +11,10 @@ import android.widget.TextView;
 
 import java.util.List;
 
+import rf.master.registration.profiapp.MainActivity;
 import rf.master.registration.profiapp.R;
 import rf.master.registration.profiapp.data.entity.Store;
+import rf.master.registration.profiapp.fragments.SearchFragment;
 
 /**
  * Created by Shiplayer on 28.03.18.
@@ -20,10 +22,13 @@ import rf.master.registration.profiapp.data.entity.Store;
 
 public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> {
     private List<Store> mListStories;
+    private SearchFragment.HandleOnClickListener mHandleOnClickListener;
 
-    public StoreAdapter(){}
+    public StoreAdapter(SearchFragment.HandleOnClickListener handleOnClickListener){
+        mHandleOnClickListener = handleOnClickListener;
+    }
 
-    public StoreAdapter(List<Store> stories){
+    public StoreAdapter(List<Store> stories, SearchFragment.HandleOnClickListener handleOnClickListener){
         mListStories = stories;
     }
 
@@ -60,6 +65,12 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
         holder.storiesRating.setRating(mListStories.get(position).getShopRating());
         holder.costRating.setRating(mListStories.get(position).getCostRating());
         holder.tvCostShow.setText(String.valueOf((float) Math.round(mListStories.get(position).getCostRating()*10)/10));
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mHandleOnClickListener.startActivity(mListStories.get(position));
+            }
+        });
     }
 
     @Override
